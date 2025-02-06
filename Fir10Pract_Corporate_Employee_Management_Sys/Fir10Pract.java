@@ -120,8 +120,39 @@ class FullTimeEmployee extends Employee {
         FullTimeEmployee emp = new FullTimeEmployee();
         getCommonInput(emp);
 
-        System.out.print("Enter Benefits Package: ");
-        emp.setBenefitsPacket(sc.nextLine());
+        // Define available benefits in a list
+        List<String> benefitsList = List.of(
+                "Health Insurance",
+                "Dental Coverage",
+                "Vision Care",
+                "Life Insurance",
+                "Disability Protection"
+        );
+
+        // Display options
+        System.out.println("Enter Benefits Package:");
+        for (int i = 0; i < benefitsList.size(); i++) {
+            System.out.println("    " + (i + 1) + ". " + benefitsList.get(i));
+        }
+        try {
+            System.out.print("Select Benefits: ");
+            int choice = sc.nextInt() - 1;
+            sc.nextLine(); // Consume newline
+
+            // Validate input range
+            if (choice < 0 || choice >= benefitsList.size()) {
+                throw new IndexOutOfBoundsException("Invalid benefits selection.");
+            }
+
+            // Store the selected benefit
+            emp.benefitsPacket = benefitsList.get(choice);
+
+            // Set the selected benefit to the employee object
+            emp.setBenefitsPacket(emp.benefitsPacket);
+        } catch (Exception e) {
+            System.out.println("Invalid input! Please enter a valid number.");
+            sc.nextLine(); // Clear invalid input
+        }
 
         emp.calculateBonus();
         return emp;
