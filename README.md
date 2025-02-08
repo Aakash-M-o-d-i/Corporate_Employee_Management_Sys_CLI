@@ -118,23 +118,23 @@ Below is a Bash script that, when executed, prints the following Corporate Repor
 
 ```bash
 ====================================================
-Corporate Report for: TechCorp
+Corporate Report for: Void Pvt Ltd
 ====================================================
 
 Departments Overview:
 ====================================================
 Department Details:
-Department ID: 101
-Department Name: Engineering
+Department ID: 717
+Department Name: IT
 Employee List:
-Details about Full-Time Employee: 
-Employee ID: 1
-Employee name: John Doe
-Employee age: 30
-Employee salary: 5000.0
+Details about Full-Time Employee:
+Employee ID: 79
+Employee name: Aakash Modi
+Employee age: 20
+Employee salary: 78900.0
 Benefits Package: Health Insurance
 After Bonus
-Employee salary: 6000.0
+Employee salary: 15780.0
 ====================================================
 
 Projects Overview:
@@ -144,6 +144,7 @@ Project ID: 201
 Project name: AI Development
 Project department: Engineering
 ====================================================
+============================= Details Successfully Added! ======================
 ```
 
 ---
