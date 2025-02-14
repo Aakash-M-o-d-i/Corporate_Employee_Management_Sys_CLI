@@ -1,3 +1,4 @@
+
 package Fir10Pract_Corporate_Employee_Management_Sys;
 
 import java.util.ArrayList;
@@ -8,13 +9,33 @@ import static Fir10Pract_Corporate_Employee_Management_Sys.Fir10Pract.sc;
 
 public class Fir10Pract {
     public static Scanner sc = new Scanner(System.in);
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_RED = "\u001B[31m";
+
+    public static void clearConsole() {
+        try {
+            String os = System.getProperty("os.name").toLowerCase();
+            if (os.contains("linux") || os.contains("mac")) {
+                new ProcessBuilder("clear").inheritIO().start().waitFor();
+            } else if (os.contains("windows")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            }
+        } catch (Exception e) {
+            System.out.println("Error while trying to clear the console.");
+        }
+    }
 
     public static void main(String[] args) {
+        clearConsole();
         boolean success = false;
         while (!success) {
             try {
                 Corporate corporate = Corporate.createFromUserInput();
+                clearConsole();
                 corporate.generateCorporateReport();
+                System.out.println(Fir10Pract.ANSI_GREEN+"\n======================= Details Successfully Added!. =======================");
                 success = true; // Exit loop if successful
             } catch (Exception e) {
                 System.out.println("Error: " + e.getMessage());
@@ -50,45 +71,45 @@ abstract class Employee {
     protected static void getCommonInput(Employee emp) {
         while (true) {
             try {
-                System.out.print("Enter Employee ID: ");
+                System.out.print(Fir10Pract.ANSI_CYAN + "Enter Employee ID: " + Fir10Pract.ANSI_RESET);
                 emp.setEmployeeID(sc.nextInt());
                 sc.nextLine(); // Consume newline
                 break;
             } catch (Exception e) {
-                System.out.println("Invalid input! Please enter a valid number.");
+                System.out.println(Fir10Pract.ANSI_RED+"Invalid input! Please enter a valid number.");
                 sc.nextLine(); // Clear invalid input
             }
         }
 
-        System.out.print("Enter Name: ");
+        System.out.print(Fir10Pract.ANSI_CYAN + "Enter Name: " + Fir10Pract.ANSI_RESET);
         emp.setName(sc.nextLine());
 
         while (true) {
             try {
-                System.out.print("Enter Age: ");
+                System.out.print(Fir10Pract.ANSI_CYAN + "Enter Age: " + Fir10Pract.ANSI_RESET);
                 emp.setAge(sc.nextInt());
                 sc.nextLine(); // Consume newline
                 if (emp.getAge() <= 0) {
-                    throw new IllegalArgumentException("Age must be greater than 0.");
+                    throw new IllegalArgumentException(Fir10Pract.ANSI_RED+"Age must be greater than 0.");
                 }
                 break;
             } catch (Exception e) {
-                System.out.println("Invalid input! Please enter a valid number.");
+                System.out.println(Fir10Pract.ANSI_RED+"Invalid input! Please enter a valid number.");
                 sc.nextLine(); // Clear invalid input
             }
         }
 
         while (true) {
             try {
-                System.out.print("Enter Base Salary: ");
+                System.out.print(Fir10Pract.ANSI_CYAN + "Enter Base Salary: " + Fir10Pract.ANSI_RESET);
                 emp.setSalary(sc.nextDouble());
                 sc.nextLine(); // Consume newline
                 if (emp.getSalary() < 0) {
-                    throw new IllegalArgumentException("Salary cannot be negative.");
+                    throw new IllegalArgumentException(Fir10Pract.ANSI_RED+"Salary cannot be negative.");
                 }
                 break;
             } catch (Exception e) {
-                System.out.println("Invalid input! Please enter a valid number.");
+                System.out.println(Fir10Pract.ANSI_RED+"Invalid input! Please enter a valid number.");
                 sc.nextLine(); // Clear invalid input
             }
         }
@@ -130,28 +151,31 @@ class FullTimeEmployee extends Employee {
         );
 
         // Display options
-        System.out.println("Enter Benefits Package:");
-        for (int i = 0; i < benefitsList.size(); i++) {
-            System.out.println("    " + (i + 1) + ". " + benefitsList.get(i));
-        }
-        try {
-            System.out.print("Select Benefits: ");
-            int choice = sc.nextInt() - 1;
-            sc.nextLine(); // Consume newline
-
-            // Validate input range
-            if (choice < 0 || choice >= benefitsList.size()) {
-                throw new IndexOutOfBoundsException("Invalid benefits selection.");
+        while (true) {
+            System.out.println(Fir10Pract.ANSI_CYAN + "Enter Benefits Package:" + Fir10Pract.ANSI_RESET);
+            for (int i = 0; i < benefitsList.size(); i++) {
+                System.out.println(Fir10Pract.ANSI_CYAN + "    " + (i + 1) + ". " + benefitsList.get(i) + Fir10Pract.ANSI_RESET);
             }
+            try {
+                System.out.print(Fir10Pract.ANSI_CYAN + "Select Benefits: " + Fir10Pract.ANSI_RESET);
+                int choice = sc.nextInt() - 1;
+                sc.nextLine(); // Consume newline
 
-            // Store the selected benefit
-            emp.benefitsPacket = benefitsList.get(choice);
+                // Validate input range
+                if (choice < 0 || choice >= benefitsList.size()) {
+                    throw new IndexOutOfBoundsException(Fir10Pract.ANSI_RED + "Invalid benefits selection.");
+                }
 
-            // Set the selected benefit to the employee object
-            emp.setBenefitsPacket(emp.benefitsPacket);
-        } catch (Exception e) {
-            System.out.println("Invalid input! Please enter a valid number.");
-            sc.nextLine(); // Clear invalid input
+                // Store the selected benefit
+                emp.benefitsPacket = benefitsList.get(choice);
+
+                // Set the selected benefit to the employee object
+                emp.setBenefitsPacket(emp.benefitsPacket);
+                break;
+            } catch (Exception e) {
+                System.out.println(Fir10Pract.ANSI_RED + "Invalid input! Please enter a valid number.");
+                sc.nextLine(); // Clear invalid input
+            }
         }
 
         emp.calculateBonus();
@@ -160,14 +184,14 @@ class FullTimeEmployee extends Employee {
 
     @Override
     public void displayDetails() {
-        System.out.println("Details about Full-Time Employee: ");
-        System.out.println("Employee ID: " + employeeID);
-        System.out.println("Employee name: " + name);
-        System.out.println("Employee age: " + age);
-        System.out.println("Employee salary: " + salary);
-        System.out.println("Benefits Package: " + benefitsPacket);
-        System.out.println("After Bonus");
-        System.out.println("Employee salary: " + bonus);
+        System.out.println(Fir10Pract.ANSI_GREEN + "Details about Full-Time Employee: " + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN + "Employee ID: " + employeeID + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN + "Employee name: " + name + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN + "Employee age: " + age + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN + "Employee salary: " + salary + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN + "Benefits Package: " + benefitsPacket + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN + "After Bonus" + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN + "Employee salary: " + bonus + Fir10Pract.ANSI_RESET);
     }
 }
 
@@ -202,30 +226,30 @@ class PartTimeEmployee extends Employee {
 
         while (true) {
             try {
-                System.out.print("Enter Hourly Rate: ");
+                System.out.print(Fir10Pract.ANSI_CYAN + "Enter Hourly Rate: " + Fir10Pract.ANSI_RESET);
                 emp.setHourlyRate(sc.nextDouble());
                 sc.nextLine(); // Consume newline
                 if (emp.getHourlyRate() < 0) {
-                    throw new IllegalArgumentException("Hourly rate cannot be negative.");
+                    throw new IllegalArgumentException(Fir10Pract.ANSI_RED+"Hourly rate cannot be negative.");
                 }
                 break;
             } catch (Exception e) {
-                System.out.println("Invalid input! Please enter a valid number.");
+                System.out.println(Fir10Pract.ANSI_RED+"Invalid input! Please enter a valid number.");
                 sc.nextLine(); // Clear invalid input
             }
         }
 
         while (true) {
             try {
-                System.out.print("Enter Hours Worked: ");
+                System.out.print(Fir10Pract.ANSI_CYAN + "Enter Hours Worked: " + Fir10Pract.ANSI_RESET);
                 emp.setHoursWorked(sc.nextInt());
                 sc.nextLine(); // Consume newline
                 if (emp.getHoursWorked() < 0) {
-                    throw new IllegalArgumentException("Hours worked cannot be negative.");
+                    throw new IllegalArgumentException(Fir10Pract.ANSI_RED+"Hours worked cannot be negative.");
                 }
                 break;
             } catch (Exception e) {
-                System.out.println("Invalid input! Please enter a valid number.");
+                System.out.println(Fir10Pract.ANSI_RED+"Invalid input! Please enter a valid number.");
                 sc.nextLine(); // Clear invalid input
             }
         }
@@ -236,15 +260,15 @@ class PartTimeEmployee extends Employee {
 
     @Override
     public void displayDetails() {
-        System.out.println("Details of Part-Time Employee:");
-        System.out.println("Employee ID: " + employeeID);
-        System.out.println("Employee name: " + name);
-        System.out.println("Employee age: " + age);
-        System.out.println("Employee salary: " + salary);
-        System.out.println("Hour per rate: " + hourlyRate);
-        System.out.println("Total hours worked: " + hoursWorked);
-        System.out.println("After Bonus:");
-        System.out.println("Employee salary: " + bonus);
+        System.out.println(Fir10Pract.ANSI_GREEN + "Details of Part-Time Employee:" + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN + "Employee ID: " + employeeID + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN + "Employee name: " + name + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN + "Employee age: " + age + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN + "Employee salary: " + salary + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN + "Hour per rate: " + hourlyRate + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN + "Total hours worked: " + hoursWorked + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN + "After Bonus:" + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN + "Employee salary: " + bonus + Fir10Pract.ANSI_RESET);
     }
 }
 
@@ -279,18 +303,18 @@ class Department {
 
         while (true) {
             try {
-                System.out.println("\n=== Create New Department ===");
-                System.out.print("Enter Department ID: ");
+                System.out.println(Fir10Pract.ANSI_CYAN + "\n=== Create New Department ===" + Fir10Pract.ANSI_RESET);
+                System.out.print(Fir10Pract.ANSI_CYAN + "Enter Department ID: " + Fir10Pract.ANSI_RESET);
                 dept.setDeptID(sc.nextInt());
                 sc.nextLine(); // Consume newline
                 break;
             } catch (Exception e) {
-                System.out.println("Invalid input! Please enter a valid number.");
+                System.out.println(Fir10Pract.ANSI_RED+"Invalid input! Please enter a valid number.");
                 sc.nextLine(); // Clear invalid input
             }
         }
 
-        System.out.print("Enter Department Name: ");
+        System.out.print(Fir10Pract.ANSI_CYAN + "Enter Department Name: " + Fir10Pract.ANSI_RESET);
         dept.setName(sc.nextLine());
 
         dept.setEmployeeList(new ArrayList<>());
@@ -298,33 +322,33 @@ class Department {
         int empCount = 0;
         while (true) {
             try {
-                System.out.print("How many employees in this department? ");
+                System.out.print(Fir10Pract.ANSI_CYAN + "How many employees in this department? " + Fir10Pract.ANSI_RESET);
                 empCount = sc.nextInt();
                 sc.nextLine(); // Consume newline
                 if (empCount < 0) {
-                    throw new IllegalArgumentException("Number of employees cannot be negative.");
+                    throw new IllegalArgumentException(Fir10Pract.ANSI_RED+"Number of employees cannot be negative.");
                 }
                 break;
             } catch (Exception e) {
-                System.out.println("Invalid input! Please enter a valid number.");
+                System.out.println(Fir10Pract.ANSI_RED+"Invalid input! Please enter a valid number.");
                 sc.nextLine(); // Clear invalid input
             }
         }
 
         for (int i = 0; i < empCount; i++) {
-            System.out.println("\nAdding Employee " + (i + 1));
+            System.out.println(Fir10Pract.ANSI_CYAN + "\nAdding Employee " + (i + 1) + Fir10Pract.ANSI_RESET);
             int empType = 0;
             while (true) {
                 try {
-                    System.out.print("Is this a (1) Full-Time or (2) Part-Time employee? ");
+                    System.out.print(Fir10Pract.ANSI_CYAN + "Is this a (1) Full-Time or (2) Part-Time employee? " + Fir10Pract.ANSI_RESET);
                     empType = sc.nextInt();
                     sc.nextLine(); // Consume newline
                     if (empType != 1 && empType != 2) {
-                        throw new IllegalArgumentException("Invalid choice. Please enter 1 or 2.");
+                        throw new IllegalArgumentException(Fir10Pract.ANSI_RED+"Invalid choice. Please enter 1 or 2.");
                     }
                     break;
                 } catch (Exception e) {
-                    System.out.println("Invalid input! Please enter 1 or 2.");
+                    System.out.println(Fir10Pract.ANSI_RED+"Invalid input! Please enter 1 or 2.");
                     sc.nextLine(); // Clear invalid input
                 }
             }
@@ -343,13 +367,13 @@ class Department {
     }
 
     public void generateDepartmentReport() {
-        System.out.println("Department Details:");
-        System.out.println("Department ID: " + deptID);
-        System.out.println("Department Name: " + name);
-        System.out.println("Employee List:");
+        System.out.println(Fir10Pract.ANSI_GREEN + "Department Details:" + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN + "Department ID: " + deptID + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN + "Department Name: " + name + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN + "Employee List:" + Fir10Pract.ANSI_RESET);
         for (Employee emp : employeeList) {
             emp.displayDetails();
-            System.out.println("====================================================");
+            System.out.println(Fir10Pract.ANSI_GREEN + "====================================================" + Fir10Pract.ANSI_RESET);
         }
     }
 }
@@ -385,36 +409,36 @@ class Project {
 
         while (true) {
             try {
-                System.out.println("\n=== Create New Project ===");
-                System.out.print("Enter Project ID: ");
+                System.out.println(Fir10Pract.ANSI_CYAN + "\n=== Create New Project ===" + Fir10Pract.ANSI_RESET);
+                System.out.print(Fir10Pract.ANSI_CYAN + "Enter Project ID: " + Fir10Pract.ANSI_RESET);
                 proj.setProjectID(sc.nextInt());
                 sc.nextLine(); // Consume newline
                 break;
             } catch (Exception e) {
-                System.out.println("Invalid input! Please enter a valid number.");
+                System.out.println(Fir10Pract.ANSI_RED+"Invalid input! Please enter a valid number.");
                 sc.nextLine(); // Clear invalid input
             }
         }
 
-        System.out.print("Enter Project Name: ");
+        System.out.print(Fir10Pract.ANSI_CYAN + "Enter Project Name: " + Fir10Pract.ANSI_RESET);
         proj.setProjectName(sc.nextLine());
 
         while (true) {
             try {
-                System.out.println("Available Departments:");
+                System.out.println(Fir10Pract.ANSI_CYAN + "Available Departments:" + Fir10Pract.ANSI_RESET);
                 for (int i = 0; i < departments.size(); i++) {
-                    System.out.println((i + 1) + ". " + departments.get(i).getName());
+                    System.out.println(Fir10Pract.ANSI_CYAN + (i + 1) + ". " + departments.get(i).getName() + Fir10Pract.ANSI_RESET);
                 }
-                System.out.print("Select Department: ");
+                System.out.print(Fir10Pract.ANSI_CYAN + "Select Department: " + Fir10Pract.ANSI_RESET);
                 int choice = sc.nextInt() - 1;
                 sc.nextLine(); // Consume newline
                 if (choice < 0 || choice >= departments.size()) {
-                    throw new IndexOutOfBoundsException("Invalid department selection.");
+                    throw new IndexOutOfBoundsException(Fir10Pract.ANSI_RED+"Invalid department selection.");
                 }
                 proj.setDepartment(departments.get(choice));
                 break;
             } catch (Exception e) {
-                System.out.println("Invalid input! Please enter a valid number.");
+                System.out.println(Fir10Pract.ANSI_RED+"Invalid input! Please enter a valid number.");
                 sc.nextLine(); // Clear invalid input
             }
         }
@@ -423,10 +447,10 @@ class Project {
     }
 
     public void displayProjectDetails() {
-        System.out.println("Project Details:");
-        System.out.println("Project ID: " + projectID);
-        System.out.println("Project name: " + projectName);
-        System.out.println("Project department: " + department.getName());
+        System.out.println(Fir10Pract.ANSI_GREEN + "Project Details:" + Fir10Pract.ANSI_RESET);
+        System.out.println(Fir10Pract.ANSI_GREEN +"Project ID: " + projectID);
+        System.out.println(Fir10Pract.ANSI_GREEN +"Project name: " + projectName);
+        System.out.println(Fir10Pract.ANSI_GREEN +"Project department: " + department.getName());
     }
 }
 
@@ -462,21 +486,21 @@ class Corporate {
         Corporate corp = new Corporate();
 
         System.out.println("=== Create New Corporate ===");
-        System.out.print("Enter Corporate Name: ");
+        System.out.print(Fir10Pract.ANSI_CYAN +"Enter Corporate Name: ");
         corp.setName(sc.nextLine());
 
         int deptCount = 0;
         while (true) {
             try {
-                System.out.print("How many departments? ");
+                System.out.print(Fir10Pract.ANSI_CYAN+"How many departments? ");
                 deptCount = sc.nextInt();
                 sc.nextLine(); // Consume newline
                 if (deptCount < 0) {
-                    throw new IllegalArgumentException("Number of departments cannot be negative.");
+                    throw new IllegalArgumentException(Fir10Pract.ANSI_RED+"Number of departments cannot be negative.");
                 }
                 break;
             } catch (Exception e) {
-                System.out.println("Invalid input! Please enter a valid number.");
+                System.out.println(Fir10Pract.ANSI_RED+"Invalid input! Please enter a valid number.");
                 sc.nextLine(); // Clear invalid input
             }
         }
@@ -490,15 +514,15 @@ class Corporate {
         int projCount = 0;
         while (true) {
             try {
-                System.out.print("\nHow many projects? ");
+                System.out.print(Fir10Pract.ANSI_CYAN+"\nHow many projects? ");
                 projCount = sc.nextInt();
                 sc.nextLine(); // Consume newline
                 if (projCount < 0) {
-                    throw new IllegalArgumentException("Number of projects cannot be negative.");
+                    throw new IllegalArgumentException(Fir10Pract.ANSI_RED+"Number of projects cannot be negative.");
                 }
                 break;
             } catch (Exception e) {
-                System.out.println("Invalid input! Please enter a valid number.");
+                System.out.println(Fir10Pract.ANSI_RED+"Invalid input! Please enter a valid number.");
                 sc.nextLine(); // Clear invalid input
             }
         }
@@ -513,21 +537,21 @@ class Corporate {
     }
 
     public void generateCorporateReport() {
-        System.out.println("====================================================");
-        System.out.println("Corporate Report for: " + name);
-        System.out.println("====================================================");
+        System.out.println(Fir10Pract.ANSI_GREEN+"====================================================");
+        System.out.println(Fir10Pract.ANSI_GREEN+"Corporate Report for: " + name);
+        System.out.println(Fir10Pract.ANSI_GREEN+"====================================================");
 
-        System.out.println("\nDepartments Overview:");
-        System.out.println("====================================================");
+        System.out.println(Fir10Pract.ANSI_GREEN+"\nDepartments Overview:");
+        System.out.println(Fir10Pract.ANSI_GREEN+"====================================================");
         for (Department dept : departmentList) {
             dept.generateDepartmentReport();
         }
 
-        System.out.println("\nProjects Overview:");
-        System.out.println("====================================================");
+        System.out.println(Fir10Pract.ANSI_GREEN+"\nProjects Overview:");
+        System.out.println(Fir10Pract.ANSI_GREEN+"====================================================");
         for (Project prj : projectList) {
             prj.displayProjectDetails();
         }
-        System.out.println("====================================================");
+        System.out.println(Fir10Pract.ANSI_GREEN+"====================================================");
     }
 }
